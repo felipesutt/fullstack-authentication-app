@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root{
+    background-image: url('../Menu2.png');
+    background-size: cover;
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat;
+
+    height: 100%;
+    width: 100%;
+}

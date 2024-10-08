@@ -1,35 +1,27 @@
-import Versions from './components/Versions'
-import electronLogo from './assets/electron.svg'
+import React, { useState } from "react";
+import Fingerprint from "./components/fingerprint";
+import Facedetection from "./components/FaceDetection";
 
-function App() {
-  const ipcHandle = () => window.electron.ipcRenderer.send('ping')
+export default function App(){
 
-  return (
-    <>
-      <img alt="logo" className="logo" src={electronLogo} />
-      <div className="creator">Powered by electron-vite</div>
-      <div className="text">
-        Build an Electron app with <span className="react">React</span>
-      </div>
-      <p className="tip">
-        Please try pressing <code>F12</code> to open the devTool
-      </p>
-      <div className="actions">
-        <div className="action">
-          <a href="https://electron-vite.org/" target="_blank" rel="noreferrer">
-            Documentation
-          </a>
+  const [showAuthentication, setShowAuthentication] = useState(false) //false
+
+  function handleClick(){
+    setShowAuthentication(!showAuthentication)
+  }
+
+  return(
+    <div className="h-full w-full flex justify-center items-center">
+      <div className="w-80 bg-neutral-500 rounded-md border-neutral-700 border-4 bg-opacity-85 p-3 flex flex-col items-center gap-3">
+        <div className="px-5 py-1 max-w-fit bg-neutral-700 rounded-md text-white">LOGIN</div>
+        <div className="flex flex-col gap-2 w-full">
+          <input className="rounded-md pl-1 h-7 focus:outline-none" placeholder="Username" type="text" />
+          <input className="rounded-md pl-1 h-7 focus:outline-none" placeholder="Password" type="password" />
         </div>
-        <div className="action">
-          <a target="_blank" rel="noreferrer" onClick={ipcHandle}>
-            Send IPC
-          </a>
-        </div>
+        <button onClick={handleClick} className="bg-green-900 hover:bg-green-700 text-white rounded-xl py-2 px-4">Login</button>
       </div>
-      <Versions></Versions>
-    </>
+      {showAuthentication && <Fingerprint handleModalVisibility={handleClick} />}
+      {/* {showAuthentication && <Facedetection />} */}
+    </div>
   )
 }
-
-export default App
-
