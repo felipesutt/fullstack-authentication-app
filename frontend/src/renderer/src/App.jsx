@@ -1,15 +1,20 @@
-import React, { useState } from "react";
-import { Helmet } from 'react-helmet';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Fingerprint from "./components/fingerprint";
 import Facedetection from "./components/FaceDetection";
 import axios from "axios"
 
 export default function App(){
+  const navigate = useNavigate(); // Hook para navegação
 
   const [showFingerprintAuthentication, setShowFingerprintAuthentication] = useState(false)
   const [showFacialAuthentication, setShowFacialAuthentication] = useState(false)
   const [usernameField, setUserNameField] = useState('')
   const [passwordField, setPasswordField] = useState('')
+
+  useEffect(() => {
+    navigate('/home')
+  }, []);
 
   async function handleSubmit(e){
     e.preventDefault()
@@ -28,9 +33,10 @@ export default function App(){
           if (user_access_level > 1){
             setShowFingerprintAuthentication(true)
           }
-          else (
-            console.log('teste')
-          )
+          else {
+            console.log(user_access_level)
+            navigate('/home')
+          }
         }
       )
       .catch(
@@ -40,11 +46,16 @@ export default function App(){
       )
   }
 
+  function handleFingerprintModalVisibility(){
+    setShowFingerprintAuthentication(!showFingerprintAuthentication)
+  }
+
+  function handleFacialModalVisibility(){
+    setShowFacialAuthentication(!showFacialAuthentication)
+  }
+
   return(
     <div className="h-full w-full flex justify-center items-center">
-      <Helmet>
-
-      </Helmet>
       <form onSubmit={handleSubmit} className="w-80 bg-neutral-500 rounded-md border-neutral-700 border-4 bg-opacity-85 p-3 flex flex-col items-center gap-3">
         <div className="px-5 py-1 max-w-fit bg-neutral-700 rounded-md text-white">LOGIN</div>
         <div className="flex flex-col gap-2 w-full">
@@ -53,7 +64,7 @@ export default function App(){
         </div>
         <button type="submit" className="bg-green-900 hover:bg-green-700 text-white rounded-xl py-2 px-4">Login</button>
       </form>
-      {showFingerprintAuthentication && <Fingerprint />}
+      {showFingerprintAuthentication && <Fingerprint handleModalVisibility={handleFingerprintModalVisibility} showFacialModal={handleFacialModalVisibility} />}
       {showFacialAuthentication && <Facedetection />}
     </div>
   )
