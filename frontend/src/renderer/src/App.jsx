@@ -6,7 +6,8 @@ import axios from "axios"
 
 export default function App(){
 
-  const [showAuthentication, setShowAuthentication] = useState(false) //false
+  const [showFingerprintAuthentication, setShowFingerprintAuthentication] = useState(false)
+  const [showFacialAuthentication, setShowFacialAuthentication] = useState(false)
   const [usernameField, setUserNameField] = useState('')
   const [passwordField, setPasswordField] = useState('')
 
@@ -18,8 +19,25 @@ export default function App(){
       passwordField
     }
 
+    console.log(data)
+
     axios.post('http://localhost:8000/server/loginuser', data)
-    // setShowAuthentication(!showAuthentication)
+      .then(
+        (response) => {
+          const user_access_level = response.data.access_level
+          if (user_access_level > 1){
+            setShowFingerprintAuthentication(true)
+          }
+          else (
+            console.log('teste')
+          )
+        }
+      )
+      .catch(
+        (error) => {
+          console.log('Erro ao fazer login!')
+        }
+      )
   }
 
   return(
@@ -35,8 +53,8 @@ export default function App(){
         </div>
         <button type="submit" className="bg-green-900 hover:bg-green-700 text-white rounded-xl py-2 px-4">Login</button>
       </form>
-      {showAuthentication && <Fingerprint />}
-      {/* {showAuthentication && <Facedetection />} */}
+      {showFingerprintAuthentication && <Fingerprint />}
+      {showFacialAuthentication && <Facedetection />}
     </div>
   )
 }
