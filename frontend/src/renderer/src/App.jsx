@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Fingerprint from "./components/fingerprint";
 import Facedetection from "./components/FaceDetection";
@@ -11,10 +11,6 @@ export default function App(){
   const [showFacialAuthentication, setShowFacialAuthentication] = useState(false)
   const [usernameField, setUserNameField] = useState('')
   const [passwordField, setPasswordField] = useState('')
-
-  useEffect(() => {
-    navigate('/home')
-  }, []);
 
   async function handleSubmit(e){
     e.preventDefault()
@@ -33,9 +29,12 @@ export default function App(){
           if (user_access_level > 1){
             setShowFingerprintAuthentication(true)
           }
-          else {
+          else if (user_access_level == 1) {
             console.log(user_access_level)
             navigate('/home')
+          }
+          else {
+            console.log("Erro")
           }
         }
       )

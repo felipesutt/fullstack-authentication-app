@@ -1,6 +1,9 @@
 import React, { useEffect, useRef } from 'react'
+import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 
 export default function Facedetection() {
+  const navigate = useNavigate(); // Hook para navegação
   const videoRef = useRef(null);
 
   useEffect(() => {
@@ -26,6 +29,22 @@ export default function Facedetection() {
           }
       };
   }, []);
+
+  // useEffect(()=>{
+  //   axios.get('http://localhost:8000/server/facial')
+  //   .then(
+  //     (response) => {
+  //       if (response.data.access_level == 3){
+  //         navigate('/home')
+  //       }
+  //     }
+  //   )
+  //   .catch(
+  //     (error) => {
+  //       console.log('Erro ao fazer a autenticação!')
+  //     }
+  //   )
+  // }, [])
 
   return (
     <div className="h-full w-full bg-gray-700 bg-opacity-75 absolute left-0 top-0 flex items-center justify-center">

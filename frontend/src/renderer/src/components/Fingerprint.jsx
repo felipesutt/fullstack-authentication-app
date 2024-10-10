@@ -1,8 +1,10 @@
 import React from "react"
 import axios from 'axios'
 import fingerprit_img from "../assets/fingerprint_img.jpg"
+import { useNavigate } from "react-router-dom";
 
 export default function Fingerprint({handleModalVisibility, showFacialModal}) {
+  const navigate = useNavigate(); // Hook para navegação
 
   async function handleCorrectFinger(){
     axios.get('http://localhost:8000/server/fingerprint')
@@ -13,7 +15,7 @@ export default function Fingerprint({handleModalVisibility, showFacialModal}) {
           showFacialModal()
         }
         else{
-          console.log('a')
+          navigate('/home')
         }
       }
     )
