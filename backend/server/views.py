@@ -6,6 +6,9 @@ import json
 
 import os
 import cv2
+import numpy as np
+from datetime import datetime
+import base64
 
 from .models import EnvironmentalData
 
@@ -95,8 +98,67 @@ def digital_authentication(request):
 @csrf_exempt
 def facial_authentication(request):
     global user_access_level
-    if request.method == 'GET':
-        return JsonResponse({'access_level': user_access_level})
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        
+        image_data = data.get('image') # Pega a imagem do objeto
+        image_data = image_data.replace('data:image/jpeg;base64,', '') # Renomeia a string da imagem base64
+
+        image_bytes = base64.b64decode(image_data) # Decodifica a imagem base64
+        np_image = np.frombuffer(image_bytes, np.uint8) # Converte os bytes da imagem em um array numpy
+        image = cv2.imdecode(np_image, cv2.IMREAD_COLOR) # Decodifica a imagem usando openCV
+
+        file_name = 'imagem.jpg'
+        file_path = os.path.join('server/authentication/facial_detection',file_name)
+        cv2.imwrite(file_path, image)
+
+        # Configuração dos detectores Haar Cascade
+        detectorFace = cv2.CascadeClassifier('server/authentication/facial_detection/cascade/haarcascade_frontalface_default.xml')
+        detectorOlho = cv2.CascadeClassifier('server/authentication/facial_detection/cascade/haarcascade-eye.xml')
+
+        # Instanciando LBPH Face Recognizer
+        reconhecedor = cv2.face.LBPHFaceRecognizer_create()
+        reconhecedor.read("server/authentication/facial_detection/classifier/classificadorLBPH.yml")
+
+        height, width = 220, 220  # Tamanho definido para redimensionar a imagem
+        font = cv2.FONT_HERSHEY_COMPLEX_SMALL
+
+        # Converte o frame para escala de cinza
+        imageGray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+        # Deteção da face no frame
+        faceDetect = detectorFace.detectMultiScale(
+            imageGray,
+            scaleFactor=1.5,
+            minSize=(35, 35),
+            flags=cv2.CASCADE_SCALE_IMAGE
+        )
+
+        # Loop para processar cada face detectada
+        for (x, y, h, w) in faceDetect:
+            # Extrai e redimensiona a face detectada
+            face_img = cv2.resize(imageGray[y:y + h, x:x + w], (width, height))
+
+            # Realiza o reconhecimento facial
+            id, confianca = reconhecedor.predict(face_img)  # ID do rosto e confiança
+
+            print('a',id, confianca)
+
+            # Verificação do ID e criação da resposta
+            if id == 1:
+                name = "Usuário"
+                return JsonResponse({'access_granted': False, 'user': name, 'confidence': confianca})
+            elif id == 2:
+                name = "Diretor"
+                return JsonResponse({'access_granted': False, 'user': name, 'confidence': confianca})
+            elif id == 3:
+                name = "Ministro"
+                return JsonResponse({'access_granted': True, 'user': name, 'confidence': confianca})
+            else:
+                return JsonResponse({'access_granted': False, 'user': 'Desconhecido', 'confidence': confianca})
+
+        # Caso nenhuma face seja detectada
+        return JsonResponse({'access_granted': False, 'user': 'Nenhuma face detectada', 'confidence': None})
     
 @csrf_exempt
 def get_information(request):
