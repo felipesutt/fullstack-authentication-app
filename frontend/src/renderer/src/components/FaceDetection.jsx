@@ -5,6 +5,7 @@ import axios from 'axios';
 
 export default function Facedetection() {
   const webcamRef = useRef(null)
+  const navigate = useNavigate(); // Hook para navegação
 
   // Função para enviar a imagem
   async function sendImage(imageSrc){
@@ -14,6 +15,9 @@ export default function Facedetection() {
       });
       console.log('Imagem enviada com sucesso!');
       console.log(response.data);
+      if (response.data.access_granted === 'True'){
+        navigate('/home')
+      }
     } catch (error){
       console.error('Erro ao enviar imagem:', error);
     }
