@@ -7,7 +7,7 @@ export default function Facedetection() {
   const webcamRef = useRef(null)
 
   // Função para enviar a imagem
-  async function sendImage(){
+  async function sendImage(imageSrc){
     try{
       const response = await axios.post('http://localhost:8000/server/facial', {
         image: imageSrc, // Envia a imagem base64

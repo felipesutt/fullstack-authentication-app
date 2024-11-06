@@ -151,7 +151,7 @@ def facial_authentication(request):
             elif id == 2:
                 name = "Diretor"
                 return JsonResponse({'access_granted': False, 'user': name, 'confidence': confianca})
-            elif id == 3:
+            elif id == 3 and confianca <= 50:
                 name = "Ministro"
                 return JsonResponse({'access_granted': True, 'user': name, 'confidence': confianca})
             else:
